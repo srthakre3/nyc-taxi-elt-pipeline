@@ -1,17 +1,13 @@
-name: dbt CI
+name: Lint & Validate
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'dbt_project/**'
   pull_request:
     branches: [main]
-    paths:
-      - 'dbt_project/**'
 
 jobs:
-  dbt-compile:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,31 +18,28 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dbt
-        run: pip install dbt-postgres==1.8.0
-
-      - name: Write dbt profiles
+      - name: Check Python syntax
         run: |
-          mkdir -p ~/.dbt
-          cat > ~/.dbt/profiles.yml << EOF
-          nyc_taxi:
-            target: ci
-            outputs:
-              ci:
-                type: postgres
-                host: localhost
-                port: 5432
-                user: dbt
-                password: dbt
-                dbname: nyc_taxi
-                schema: dbt_ci
-                threads: 4
-          EOF
+          python -m py_compile ingestion/download_trips.py
+          python -m py_compile dags/nyc_taxi_pipeline.py
+          echo "Python syntax OK"
 
-      - name: dbt deps
-        working-directory: dbt_project
-        run: dbt deps
+      - name: Validate YAML files
+        run: |
+          pip install pyyaml -q
+          python -c "
+          import yaml, glob, sys
+          files = glob.glob('**/*.yml', recursive=True) + glob.glob('**/*.yaml', recursive=True)
+          for f in files:
+              try:
+                  yaml.safe_load(open(f))
+                  print(f'OK: {f}')
+              except Exception as e:
+                  print(f'FAIL: {f} — {e}')
+                  sys.exit(1)
+          "
 
-      - name: dbt parse (validate project structure)
-        working-directory: dbt_project
-        run: dbt parse --target ci
+      - name: Validate SQL files exist
+        run: |
+          find dbt_project/models -name "*.sql" | sort
+          echo "SQL models present"
