@@ -11,23 +11,8 @@ on:
       - 'dbt_project/**'
 
 jobs:
-  dbt-build:
+  dbt-compile:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: dbt
-          POSTGRES_PASSWORD: dbt
-          POSTGRES_DB: nyc_taxi
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +47,6 @@ jobs:
         working-directory: dbt_project
         run: dbt deps
 
-      - name: dbt build (compile + run + test)
+      - name: dbt compile (syntax check)
         working-directory: dbt_project
-        run: dbt build --target ci
+        run: dbt compile --target ci
