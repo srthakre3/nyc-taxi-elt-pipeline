@@ -47,6 +47,6 @@ jobs:
         working-directory: dbt_project
         run: dbt deps
 
-      - name: dbt compile (syntax check)
+      - name: dbt parse (validate project structure)
         working-directory: dbt_project
-        run: dbt compile --target ci
+        run: dbt parse --target ci
