@@ -1,0 +1,67 @@
+name: dbt CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dbt_project/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'dbt_project/**'
+
+jobs:
+  dbt-build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: dbt
+          POSTGRES_PASSWORD: dbt
+          POSTGRES_DB: nyc_taxi
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dbt
+        run: pip install dbt-postgres==1.8.0
+
+      - name: Write dbt profiles
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << EOF
+          nyc_taxi:
+            target: ci
+            outputs:
+              ci:
+                type: postgres
+                host: localhost
+                port: 5432
+                user: dbt
+                password: dbt
+                dbname: nyc_taxi
+                schema: dbt_ci
+                threads: 4
+          EOF
+
+      - name: dbt deps
+        working-directory: dbt_project
+        run: dbt deps
+
+      - name: dbt build (compile + run + test)
+        working-directory: dbt_project
+        run: dbt build --target ci
