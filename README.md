@@ -1,4 +1,4 @@
-# NYC Taxi ELT Pipeline — dbt & Apache Airflow
+# NYC Taxi ELT Pipeline: dbt & Apache Airflow
 
 End-to-end ELT pipeline ingesting NYC TLC trip data into PostgreSQL, transforming with dbt (staging → intermediate → dimensional mart), orchestrated with Apache Airflow, and validated with dbt tests + GitHub Actions CI.
 
@@ -61,9 +61,8 @@ nyc-taxi-elt-pipeline/
 ## Setup
 
 ### Prerequisites
-- Docker & Docker Compose
-- Python 3.9+
-- dbt-postgres
+
+Docker and Docker Compose, Python 3.9+, and dbt-postgres.
 
 ### Run locally
 
@@ -111,19 +110,8 @@ dim_date
 
 ## Data Quality
 
-dbt tests cover:
-- `not_null` on all primary keys and critical fields
-- `unique` on trip_id and date_id
-- `accepted_values` on payment_type
-- Custom test: trip duration must be > 0
+dbt tests validate `not_null` on all primary keys and critical fields, `unique` on trip_id and date_id, `accepted_values` on payment_type, and a custom test ensuring trip duration is greater than 0.
 
 ## Status
 
-- [ ] Ingestion script — download NYC TLC parquet files
-- [ ] PostgreSQL raw schema
-- [ ] dbt staging models
-- [ ] dbt intermediate models
-- [ ] dbt mart models (fct_trips, dim_date)
-- [ ] Airflow DAG
-- [ ] dbt tests
-- [ ] GitHub Actions CI
+Work in progress. Ingestion, PostgreSQL raw schema, dbt models (staging, intermediate, marts), Airflow DAG, dbt tests, and GitHub Actions CI are all actively being built out.
