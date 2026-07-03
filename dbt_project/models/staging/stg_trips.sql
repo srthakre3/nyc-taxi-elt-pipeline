@@ -29,6 +29,9 @@ cleaned as (
         and tpep_dropoff_datetime > tpep_pickup_datetime
         and trip_distance > 0
         and total_amount > 0
+        and payment_type != 0                                   -- exclude unknown payment type
+        and tpep_pickup_datetime >= '2024-01-01'                -- scope to 2024 data only
+        and tpep_pickup_datetime < '2025-01-01'
 )
 
-select * from cleaned
+select distinct * from cleaned

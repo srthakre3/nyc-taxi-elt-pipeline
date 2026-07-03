@@ -6,8 +6,7 @@ Downloads yellow taxi trip parquet files and loads raw data into PostgreSQL.
 import os
 import requests
 import pandas as pd
-import psycopg2
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -51,11 +50,15 @@ def main():
     engine = create_engine(DB_CONN)
 
     # Create raw schema if not exists
-    with engine.connect() as conn:
-        conn.execute(f"CREATE SCHEMA IF NOT EXISTS {RAW_SCHEMA}")
-        conn.commit()
+    with engine.begin() as conn:
+        conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {RAW_SCHEMA}"))
 
-    first = True
+    # Drop table with CASCADE to remove any dependent dbt views
+    # dbt_run will recreate them after ingestion
+    with engine.begin() as conn:
+        conn.execute(text(f"DROP TABLE IF EXISTS {RAW_SCHEMA}.{RAW_TABLE} CASCADE"))
+        print(f"Dropped {RAW_SCHEMA}.{RAW_TABLE} (CASCADE)")
+
     for url in DATASET_URLS:
         df = download_parquet(url)
 
@@ -72,9 +75,8 @@ def main():
             df, engine,
             schema=RAW_SCHEMA,
             table=RAW_TABLE,
-            if_exists="replace" if first else "append"
+            if_exists="append"
         )
-        first = False
 
     print(f"Ingestion complete.")
 
