@@ -1,0 +1,86 @@
+version: 2
+
+models:
+  - name: fct_trips
+    description: >
+      Fact table — one row per NYC taxi trip.
+      Grain: one trip identified by surrogate key on (pickup_at, dropoff_at, pickup_location_id, total_amount).
+    columns:
+      - name: trip_id
+        description: Surrogate key (MD5 hash of pickup_at + dropoff_at + pickup_location_id + total_amount)
+        tests:
+          - not_null
+          - unique
+
+      - name: date_id
+        description: Foreign key to dim_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
+
+      - name: pickup_at
+        description: Trip pickup timestamp
+        tests:
+          - not_null
+
+      - name: dropoff_at
+        description: Trip dropoff timestamp
+        tests:
+          - not_null
+
+      - name: trip_duration_minutes
+        description: Duration in minutes (dropoff - pickup)
+        tests:
+          - not_null
+
+      - name: trip_distance_miles
+        description: Trip distance in miles
+        tests:
+          - not_null
+
+      - name: fare_amount
+        description: Base fare charged
+        tests:
+          - not_null
+
+      - name: total_amount
+        description: Total amount charged including tips and fees
+        tests:
+          - not_null
+
+      - name: payment_type_id
+        description: Payment method (1=Credit, 2=Cash, 3=No charge, 4=Dispute)
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6]
+
+  - name: dim_date
+    description: Date dimension covering the full trip data range (2024).
+    columns:
+      - name: date_id
+        description: Primary key — the calendar date
+        tests:
+          - not_null
+          - unique
+
+      - name: year
+        description: Calendar year
+        tests:
+          - not_null
+
+      - name: month
+        description: Calendar month (1-12)
+        tests:
+          - not_null
+
+      - name: day
+        description: Day of month
+        tests:
+          - not_null
+
+      - name: is_weekend
+        description: True if Saturday or Sunday
+        tests:
+          - not_null

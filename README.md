@@ -4,6 +4,10 @@ End-to-end ELT pipeline ingesting NYC TLC yellow taxi trip data into PostgreSQL,
 
 ## Architecture
 
+![Architecture Diagram](docs/architecture.svg)
+
+The pipeline ingests 9.5M rows of NYC TLC trip data via Python into PostgreSQL, transforms it with dbt across three layers (staging → intermediate → dimensional mart with star schema), orchestrates the full workflow with Apache Airflow DAGs, enforces data quality with 22 dbt tests, and runs CI via GitHub Actions.
+
 ```
 NYC TLC API (Parquet files)
          │
