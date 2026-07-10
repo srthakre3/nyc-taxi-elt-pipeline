@@ -1,9 +1,11 @@
-<svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" role="img">
+<svg viewBox="0 0 900 370" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif" role="img">
   <title>End-to-End ELT Pipeline Architecture</title>
-  <desc>Data flows from NYC TLC source through Python ingestion, PostgreSQL raw layer, dbt transformations, to analytics consumers. Orchestrated by Airflow, tested with dbt tests and GitHub Actions CI.</desc>
-  <rect width="900" height="340" fill="#F8FAFC" rx="12"/>
+  <desc>Data flows from NYC TLC source through Python ingestion, PostgreSQL raw layer, dbt transformations, to analytics consumers. Orchestrated by Airflow with Slack alerting, tested with dbt tests and GitHub Actions CI.</desc>
+  <rect width="900" height="370" fill="#F8FAFC" rx="12"/>
   <text x="450" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#0F172A">End-to-End ELT Pipeline</text>
-  <text x="450" y="48" text-anchor="middle" font-size="10" fill="#64748B">Python · dbt · Apache Airflow · PostgreSQL · GitHub Actions</text>
+  <text x="450" y="48" text-anchor="middle" font-size="10" fill="#64748B">Python · dbt · Apache Airflow · PostgreSQL · GitHub Actions · Slack</text>
+
+  <!-- DATA FLOW ROW -->
   <text x="22" y="76" font-size="9" font-weight="700" fill="#94A3B8" letter-spacing="1.2">DATA FLOW</text>
   <rect x="20" y="84" width="110" height="62" rx="8" fill="#DBEAFE" stroke="#3B82F6" stroke-width="1.5"/>
   <text x="75" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#1D4ED8">Source</text>
@@ -11,18 +13,22 @@
   <text x="75" y="137" text-anchor="middle" font-size="9" fill="#2563EB">9.5M rows</text>
   <line x1="130" y1="115" x2="152" y2="115" stroke="#CBD5E1" stroke-width="1.5"/>
   <polygon points="152,111 160,115 152,119" fill="#CBD5E1"/>
+
   <rect x="160" y="84" width="110" height="62" rx="8" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/>
   <text x="215" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#15803D">Ingest</text>
   <text x="215" y="123" text-anchor="middle" font-size="9" fill="#16A34A">Python Script</text>
   <text x="215" y="137" text-anchor="middle" font-size="9" fill="#16A34A">Batch Load</text>
   <line x1="270" y1="115" x2="292" y2="115" stroke="#CBD5E1" stroke-width="1.5"/>
   <polygon points="292,111 300,115 292,119" fill="#CBD5E1"/>
+
   <rect x="300" y="84" width="110" height="62" rx="8" fill="#FEF9C3" stroke="#CA8A04" stroke-width="1.5"/>
   <text x="355" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#92400E">Raw Layer</text>
   <text x="355" y="123" text-anchor="middle" font-size="9" fill="#B45309">PostgreSQL</text>
   <text x="355" y="137" text-anchor="middle" font-size="9" fill="#B45309">raw schema</text>
   <line x1="410" y1="115" x2="432" y2="115" stroke="#CBD5E1" stroke-width="1.5"/>
   <polygon points="432,111 440,115 432,119" fill="#CBD5E1"/>
+
+  <!-- dbt container -->
   <rect x="440" y="74" width="300" height="82" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="5,3"/>
   <text x="590" y="90" text-anchor="middle" font-size="9" font-weight="700" fill="#7C3AED" letter-spacing="0.8">dbt TRANSFORMATIONS</text>
   <rect x="450" y="96" width="82" height="50" rx="6" fill="#EDE9FE" stroke="#8B5CF6" stroke-width="1"/>
@@ -41,28 +47,46 @@
   <text x="694" y="117" text-anchor="middle" font-size="10" font-weight="600" fill="#6D28D9">Mart</text>
   <text x="694" y="130" text-anchor="middle" font-size="8" fill="#7C3AED">Star Schema</text>
   <text x="694" y="141" text-anchor="middle" font-size="8" fill="#7C3AED">Fact + Dims</text>
+
   <line x1="740" y1="115" x2="762" y2="115" stroke="#CBD5E1" stroke-width="1.5"/>
   <polygon points="762,111 770,115 762,119" fill="#CBD5E1"/>
   <rect x="770" y="84" width="110" height="62" rx="8" fill="#FDF4FF" stroke="#A21CAF" stroke-width="1.5"/>
   <text x="825" y="108" text-anchor="middle" font-size="11" font-weight="700" fill="#86198F">Serving</text>
   <text x="825" y="123" text-anchor="middle" font-size="9" fill="#A21CAF">Analytics</text>
   <text x="825" y="137" text-anchor="middle" font-size="9" fill="#A21CAF">Consumers</text>
+
+  <!-- ORCHESTRATION ROW -->
   <text x="22" y="182" font-size="9" font-weight="700" fill="#94A3B8" letter-spacing="1.2">ORCHESTRATION</text>
   <rect x="20" y="190" width="420" height="52" rx="8" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
   <text x="44" y="211" font-size="11" font-weight="700" fill="#C2410C">Apache Airflow</text>
-  <text x="44" y="226" font-size="9" fill="#EA580C">DAG-based scheduling: ingest, dbt run, quality checks, retries</text>
-  <text x="44" y="238" font-size="9" fill="#EA580C">Task dependency management + SLA alerts</text>
+  <text x="44" y="226" font-size="9" fill="#EA580C">DAG: ingest → dbt deps → dbt run → dbt test → dbt docs</text>
+  <text x="44" y="238" font-size="9" fill="#EA580C">On_success / on_failure callbacks trigger Slack webhook</text>
+
+  <!-- QUALITY & CI ROW -->
   <text x="455" y="182" font-size="9" font-weight="700" fill="#94A3B8" letter-spacing="1.2">QUALITY &amp; CI</text>
   <rect x="455" y="190" width="425" height="52" rx="8" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/>
   <text x="479" y="211" font-size="11" font-weight="700" fill="#15803D">dbt Tests + GitHub Actions CI</text>
   <text x="479" y="226" font-size="9" fill="#16A34A">22 tests: not_null, unique, accepted_values, referential integrity</text>
   <text x="479" y="238" font-size="9" fill="#16A34A">CI pipeline runs dbt test on every push and pull request</text>
-  <text x="22" y="272" font-size="9" font-weight="700" fill="#94A3B8" letter-spacing="1.2">LEGEND</text>
-  <rect x="22" y="280" width="12" height="10" rx="2" fill="#DBEAFE" stroke="#3B82F6" stroke-width="1"/><text x="38" y="289" font-size="9" fill="#475569">Source</text>
-  <rect x="100" y="280" width="12" height="10" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1"/><text x="116" y="289" font-size="9" fill="#475569">Ingestion</text>
-  <rect x="190" y="280" width="12" height="10" rx="2" fill="#FEF9C3" stroke="#CA8A04" stroke-width="1"/><text x="206" y="289" font-size="9" fill="#475569">Storage</text>
-  <rect x="265" y="280" width="12" height="10" rx="2" fill="#EDE9FE" stroke="#8B5CF6" stroke-width="1"/><text x="281" y="289" font-size="9" fill="#475569">Transform (dbt)</text>
-  <rect x="385" y="280" width="12" height="10" rx="2" fill="#FDF4FF" stroke="#A21CAF" stroke-width="1"/><text x="401" y="289" font-size="9" fill="#475569">Serving</text>
-  <rect x="455" y="280" width="12" height="10" rx="2" fill="#FFF7ED" stroke="#EA580C" stroke-width="1"/><text x="471" y="289" font-size="9" fill="#475569">Orchestration</text>
-  <rect x="562" y="280" width="12" height="10" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1"/><text x="578" y="289" font-size="9" fill="#475569">Quality / CI</text>
+
+  <!-- ALERTING ROW -->
+  <text x="22" y="262" font-size="9" font-weight="700" fill="#94A3B8" letter-spacing="1.2">ALERTING</text>
+  <!-- Arrow from Airflow box down to Slack box -->
+  <line x1="220" y1="242" x2="220" y2="270" stroke="#CBD5E1" stroke-width="1.5"/>
+  <polygon points="216,270 220,278 224,270" fill="#CBD5E1"/>
+  <rect x="20" y="278" width="400" height="48" rx="8" fill="#E8F5E9" stroke="#2EB67D" stroke-width="1.5"/>
+  <text x="44" y="299" font-size="11" font-weight="700" fill="#1B5E20">Slack Webhook Alerts</text>
+  <text x="44" y="313" font-size="9" fill="#2E7D32">✅ on_success_callback — pipeline completed message to #data-alerts channel</text>
+  <text x="44" y="325" font-size="9" fill="#2E7D32">❌ on_failure_callback — failed task name + Airflow log link</text>
+
+  <!-- LEGEND -->
+  <text x="450" y="262" font-size="9" font-weight="700" fill="#94A3B8" letter-spacing="1.2">LEGEND</text>
+  <rect x="450" y="278" width="12" height="10" rx="2" fill="#DBEAFE" stroke="#3B82F6" stroke-width="1"/><text x="466" y="287" font-size="9" fill="#475569">Source</text>
+  <rect x="520" y="278" width="12" height="10" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1"/><text x="536" y="287" font-size="9" fill="#475569">Ingestion</text>
+  <rect x="600" y="278" width="12" height="10" rx="2" fill="#FEF9C3" stroke="#CA8A04" stroke-width="1"/><text x="616" y="287" font-size="9" fill="#475569">Storage</text>
+  <rect x="665" y="278" width="12" height="10" rx="2" fill="#EDE9FE" stroke="#8B5CF6" stroke-width="1"/><text x="681" y="287" font-size="9" fill="#475569">Transform</text>
+  <rect x="748" y="278" width="12" height="10" rx="2" fill="#FDF4FF" stroke="#A21CAF" stroke-width="1"/><text x="764" y="287" font-size="9" fill="#475569">Serving</text>
+  <rect x="450" y="296" width="12" height="10" rx="2" fill="#FFF7ED" stroke="#EA580C" stroke-width="1"/><text x="466" y="305" font-size="9" fill="#475569">Orchestration</text>
+  <rect x="560" y="296" width="12" height="10" rx="2" fill="#DCFCE7" stroke="#16A34A" stroke-width="1"/><text x="576" y="305" font-size="9" fill="#475569">Quality / CI</text>
+  <rect x="648" y="296" width="12" height="10" rx="2" fill="#E8F5E9" stroke="#2EB67D" stroke-width="1"/><text x="664" y="305" font-size="9" fill="#475569">Alerting</text>
 </svg>

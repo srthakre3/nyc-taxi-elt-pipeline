@@ -1,6 +1,6 @@
 # NYC Taxi ELT Pipeline: dbt & Apache Airflow
 
-End-to-end ELT pipeline ingesting NYC TLC yellow taxi trip data into PostgreSQL, transforming with dbt (staging → intermediate → dimensional mart), orchestrated with Apache Airflow, and validated with 22 dbt tests.
+End-to-end ELT pipeline ingesting NYC TLC yellow taxi trip data into PostgreSQL, transforming with dbt (staging → intermediate → dimensional mart), orchestrated with Apache Airflow, validated with 22 dbt tests, and monitored with Slack alerts.
 
 ## Architecture
 
@@ -17,6 +17,7 @@ The pipeline ingests 9.5M rows of NYC TLC trip data via Python into PostgreSQL, 
 | Warehouse | PostgreSQL 15 (local via Docker) |
 | Ingestion | Python (requests, pandas, SQLAlchemy) |
 | Data Quality | dbt tests (not_null, unique, accepted_values, relationships) |
+| Alerting | Slack Incoming Webhooks (on_success / on_failure callbacks) |
 | CI/CD | GitHub Actions |
 | Containerization | Docker + Docker Compose |
 
@@ -26,6 +27,13 @@ The pipeline ingests 9.5M rows of NYC TLC trip data via Python into PostgreSQL, 
 
 ```
 ingest_raw_data → dbt_deps → dbt_run → dbt_test → dbt_docs_generate
+```
+
+Airflow `on_success_callback` and `on_failure_callback` fire Slack webhook messages after every run. Success posts a completion summary; failure posts the failed task name and a direct link to the Airflow log.
+
+Add your webhook URL to `.env` before starting:
+```bash
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
 ```
 
 ## Project Structure
@@ -121,3 +129,4 @@ All 5 tasks run automatically: ingest → dbt deps → dbt run → dbt test → 
 - 8.55M clean rows in fct_trips after filtering invalid trips
 - 22/22 dbt tests passing
 - Pipeline runs end-to-end in under 10 minutes
+- Slack alert fires on every run with success summary or failed task + log link
